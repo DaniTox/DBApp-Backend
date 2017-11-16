@@ -47,10 +47,10 @@ $voti = null;
 while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
   if (!empty($row)) {
     $voti[] = array(
-      'Voto' => $row["Voto"],
-      'Titolo' => $row["Titolo"],
-      'Data' => $row["Data"],
-      'Materia' => $row["materia"],
+      'voto' => $row["Voto"],
+      'titolo' => $row["Titolo"],
+      'data' => $row["Data"],
+      'materia' => $row["materia"],
     );
   }
 }
@@ -62,12 +62,30 @@ if ($voti == null) {
 }
 
 
+//RIORDINA IL RISULTATO
+$newVoti = array();
+foreach ($voti as $voto) {
+  foreach ($voto as $key => $value) {
+    if ($key == "materia") {
+      if ($newVoti[$value] == null) {
+        $newVoti[$value] = array();
+      }
+      array_push($newVoti[$value], $voto);
+    }
+  }
+}
+
+
+
+
+
+
 
 //RITORNA IL RISULTATO
-$value["code"] = "200";
-$value["message"] = "Voti ottenuti correttamente";
-$value["voti"] = $voti;
-echo json_encode($value);
+$values["code"] = "200";
+$values["message"] = "Voti ottenuti correttamente";
+$values["voti"] = $newVoti;
+echo json_encode($values);
 $connessione->disconnect();
 exit(0);
 

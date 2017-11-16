@@ -31,7 +31,15 @@ $result = $stmt->get_result();
 $verifiche = null;
 while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
   if (!empty($row)) {
-    $verifiche[] = $row;
+    $verifiche[] = array(
+      "idVerifica" => $row["idVerifica"],
+      "data" => $row["Data"],
+      "svolgimento" => $row["Svolgimento"],
+      "titolo" => $row["Titolo"],
+      "classe" => $row["classe"],
+      "materia" => $row["Materia"],
+      "formatore" => $row["Formatore"],
+    );
   }
 }
 $stmt->close();
@@ -41,7 +49,7 @@ $stmt->close();
 $newVerifiche = array();
 foreach ($verifiche as $verifica) {
   foreach ($verifica as $key => $value) {
-    if ($key == "Materia") {
+    if ($key == "materia") {
       if ($newVerifiche[$value] == null) {
         $newVerifiche[$value] = array();
       }

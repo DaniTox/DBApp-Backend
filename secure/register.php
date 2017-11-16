@@ -111,7 +111,6 @@ if ($user == null) {
   echo json_encode(geterror("user ottenuto = null"));
   dbabort();
 }
-print_r($user);
 
 //OTTIENI LA CLASSE DAL SUO ID
 $idClasse = $user["idClasse"];
@@ -129,6 +128,7 @@ $stmt->close();
 $user["id"] = strval($user["id"]);
 unset($user["idClasse"]);
 unset($user["salt"]);
+unset($user["password"]);
 $user["classe"] = $classe;
 
 

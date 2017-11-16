@@ -65,10 +65,11 @@ if ($finalPasswdTyped == $user["password"]) {
   $user["classe"] = $classe;
   unset($user["idClasse"]);
   unset($user["salt"]);
+  unset($user["password"]);
 
   $value["code"] = "200";
   $value["message"] = "Password corretta";
-  $value["user"] = $user;
+  $value["studente"] = $user;
   echo json_encode($value);
   exit(0);
 }
