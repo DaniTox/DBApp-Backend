@@ -125,7 +125,6 @@ $stmt->close();
 
 
 //CONVERTI VAR DELL'UTENTE
-$user["id"] = strval($user["id"]);
 unset($user["idClasse"]);
 unset($user["salt"]);
 unset($user["password"]);

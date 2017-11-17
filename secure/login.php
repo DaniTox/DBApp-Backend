@@ -5,7 +5,7 @@
 $email = $_REQUEST["email"];
 $password = $_REQUEST["password"];
 if ($email == null || $password == null) {
-  echo json_encode(getError("Manca email e/o password"));
+  echo json_encode(geterror("Manca email e/o password"));
   exit(1);
 }
 
@@ -33,7 +33,11 @@ while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
   }
 }
 $stmt->close();
-
+if ($user == null) {
+  echo json_encode(geterror("Nessuno studente trovato nel database con questa mail"));
+  $connessione->disconnect();
+  exit(1);
+}
 
 
 //GET CLASSE STRING DA ID
@@ -74,7 +78,7 @@ if ($finalPasswdTyped == $user["password"]) {
   exit(0);
 }
 else {
-  echo json_encode(getError("Password errata"));
+  echo json_encode(geterror("Password errata"));
   exit(1);
 }
 
@@ -87,7 +91,7 @@ else {
 
 
 //FUNZIONI AUSILIARIE
- function getError($text) {
+ function geterror($text) {
   $value["code"] = "400";
   $value["message"] = $text;
   return $value;
