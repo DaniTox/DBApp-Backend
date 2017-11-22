@@ -1,6 +1,7 @@
 <?php
 
-$classe = $_REQUEST["classe"];
+$classe = $_REQUEST['classe'];
+$token = $_REQUEST['token'];
 
 if ($classe == null) {
   echo json_encode(geterror("Manca un parametro"));
@@ -45,16 +46,67 @@ while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
 $stmt->close();
 
 
+//CHECK IF STUDENTE HAS VOTO INVIATO
+if ($token != null) {
+  $query = "SELECT id FROM Studenti WHERE token = ?";
+  $stmt = $connessione->conn->prepare($query);
+  $stmt->bind_param("s", $token);
+  $stmt->execute();
+  $id_studente = null;
+  $stmt->bind_result($id_studente);
+  $stmt->fetch();
+  $stmt->close();
+  if ($id_studente != null) {
+    $query = "SELECT idVerifica FROM Voti WHERE idStudente = ?";
+    $stmt = $connessione->conn->prepare($query);
+    $stmt->bind_param("i", $id_studente);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $id_verifiche_inviate = null;
+    while ($row = $result->fetch_array(MYSQLI_NUM)) {
+      if (!empty($row)) {
+        $id_verifiche_inviate[] .= $row[0];
+      }
+    }
+    $stmt->close();
+
+
+
+  }
+
+
+
+
+
+}
+
+
+
+
 //RIORDINA IL RISULTATO
-$newVerifiche = array();
+// $newVerifiche = array();
 foreach ($verifiche as $verifica) {
   foreach ($verifica as $key => $value) {
-    if ($key == "materia") {
-      if ($newVerifiche[$value] == null) {
-        $newVerifiche[$value] = array();
-      }
-      array_push($newVerifiche[$value], $verifica);
+    if ($key == "idVerifica") {
+        if (!empty($id_verifiche_inviate)) {
+          if (in_array($value, $id_verifiche_inviate)) {
+            $verifica["isVotoSent"] = True;
+          }
+          else {
+            $verifica["isVotoSent"] = False;
+          }
+        }
+        else {
+          $verifica["isVotoSent"] = False;
+        }
     }
+
+    // if ($key == "materia") {
+    //   if ($newVerifiche[$value] == null) {
+    //     $newVerifiche[$value] = array();
+    //   }
+    //   array_push($newVerifiche[$value], $verifica);
+    // }
   }
 }
 
@@ -63,7 +115,7 @@ foreach ($verifiche as $verifica) {
 //RITORNA IL RISULTATO
 $response["code"] = "200";
 $response["message"] = "Ottenute con successo";
-$response["verifiche"] = $newVerifiche;
+$response["verifiche"] = $verifiche;
 echo json_encode($response);
 $connessione->disconnect();
 exit(0);

@@ -36,6 +36,23 @@ if ($id_studente == null) {
 }
 
 
+//CHECK IF VERIFICA ESISTE
+$query = "SELECT idVerifica FROM Verifiche WHERE idVerifica = ?";
+$stmt = $connessione->conn->prepare($query);
+$stmt->bind_param("i", $id_verifica);
+$stmt->execute();
+$temp = null;
+$stmt->bind_result($temp);
+$stmt->fetch();
+$stmt->close();
+if ($temp == null) {
+  echo json_encode(geterror("idVerifica non trovata nel database. Probabilmente il professore ha eliminato la verifica. Prova a riaggiornare la pagina delle verifiche e riprova."));
+  $connessione->disconnect();
+  exit(1);
+}
+
+
+
 //INSERISCI IL VOTO NEL DATABASE
 $query = "INSERT INTO Voti (idStudente, idVerifica, Voto) VALUES (?, ?, ?)";
 $stmt = $connessione->conn->prepare($query);
