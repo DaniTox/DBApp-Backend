@@ -47,7 +47,11 @@ $stmt->close();
 
 
 //CHECK IF STUDENTE HAS VOTO INVIATO
-if ($token != null) {
+
+while ($token != null && $verifiche != null) {
+
+
+  //GET ID_STUDENTE FROM TOKEN
   $query = "SELECT id FROM Studenti WHERE token = ?";
   $stmt = $connessione->conn->prepare($query);
   $stmt->bind_param("s", $token);
@@ -56,66 +60,52 @@ if ($token != null) {
   $stmt->bind_result($id_studente);
   $stmt->fetch();
   $stmt->close();
-  if ($id_studente != null) {
-    $query = "SELECT idVerifica FROM Voti WHERE idStudente = ?";
-    $stmt = $connessione->conn->prepare($query);
-    $stmt->bind_param("i", $id_studente);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $id_verifiche_inviate = null;
-    while ($row = $result->fetch_array(MYSQLI_NUM)) {
-      if (!empty($row)) {
-        $id_verifiche_inviate[] .= $row[0];
+  if ($id_studente == null) { echo "id_studente == null"; break; }
+
+
+  //SELECT IDVERIFICHE DOVE VOTI GIà INVIATI
+  $query = "SELECT idVerifica FROM Voti WHERE idStudente = ?";
+  $stmt = $connessione->conn->prepare($query);
+  $stmt->bind_param("i", $id_studente);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $id_verifiche_inviate = null;
+  while ($row = $result->fetch_array(MYSQLI_NUM)) {
+    if (empty($row)) { break; }
+    $id_verifiche_inviate[] .= $row[0];
+  }
+  $stmt->close();
+  if ($id_verifiche_inviate == null) { echo "id_verifiche_inviate = null"; break; }
+
+
+  //CREATE A NEW ARRAY WITH ARRAY VERIFICHE MODIFICATE
+  $newVerifiche = array();
+  foreach ($verifiche as $verifica) {
+    foreach ($verifica as $key => $value) {
+      if ($key != "idVerifica") { continue; }
+      if (in_array($value, $id_verifiche_inviate)) {
+        $verifica["isVotoSent"] = "True";
+        $newVerifiche[] = $verifica;
+        continue;
       }
+      $verifica["isVotoSent"] = "False";
+      $newVerifiche[] = $verifica;
+
     }
-    $stmt->close();
-
-
-
   }
 
-
-
-
-
+  break;
 }
 
-
-
-
-//RIORDINA IL RISULTATO
-// $newVerifiche = array();
-foreach ($verifiche as $verifica) {
-  foreach ($verifica as $key => $value) {
-    if ($key == "idVerifica") {
-        if (!empty($id_verifiche_inviate)) {
-          if (in_array($value, $id_verifiche_inviate)) {
-            $verifica["isVotoSent"] = True;
-          }
-          else {
-            $verifica["isVotoSent"] = False;
-          }
-        }
-        else {
-          $verifica["isVotoSent"] = False;
-        }
-    }
-
-    // if ($key == "materia") {
-    //   if ($newVerifiche[$value] == null) {
-    //     $newVerifiche[$value] = array();
-    //   }
-    //   array_push($newVerifiche[$value], $verifica);
-    // }
-  }
+if ($token == null || $id_studente == null) {
+  $newVerifiche = $verifiche;
 }
-
 
 
 //RITORNA IL RISULTATO
 $response["code"] = "200";
 $response["message"] = "Ottenute con successo";
-$response["verifiche"] = $verifiche;
+$response["verifiche"] = $newVerifiche;
 echo json_encode($response);
 $connessione->disconnect();
 exit(0);
