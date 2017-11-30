@@ -47,9 +47,7 @@ $stmt->close();
 
 
 //CHECK IF STUDENTE HAS VOTO INVIATO
-
 while ($token != null && $verifiche != null) {
-
 
   //GET ID_STUDENTE FROM TOKEN
   $query = "SELECT id FROM Studenti WHERE token = ?";
@@ -60,7 +58,7 @@ while ($token != null && $verifiche != null) {
   $stmt->bind_result($id_studente);
   $stmt->fetch();
   $stmt->close();
-  if ($id_studente == null) { echo "id_studente == null"; break; }
+  if ($id_studente == null) { break; }
 
 
   //SELECT IDVERIFICHE DOVE VOTI GIà INVIATI
@@ -75,7 +73,7 @@ while ($token != null && $verifiche != null) {
     $id_verifiche_inviate[] .= $row[0];
   }
   $stmt->close();
-  if ($id_verifiche_inviate == null) { echo "id_verifiche_inviate = null"; break; }
+  if ($id_verifiche_inviate == null) { break; }
 
 
   //CREATE A NEW ARRAY WITH ARRAY VERIFICHE MODIFICATE
@@ -84,11 +82,11 @@ while ($token != null && $verifiche != null) {
     foreach ($verifica as $key => $value) {
       if ($key != "idVerifica") { continue; }
       if (in_array($value, $id_verifiche_inviate)) {
-        $verifica["isVotoSent"] = "True";
+        $verifica["isVotoSent"] = True;
         $newVerifiche[] = $verifica;
         continue;
       }
-      $verifica["isVotoSent"] = "False";
+      $verifica["isVotoSent"] = False;
       $newVerifiche[] = $verifica;
 
     }
@@ -97,7 +95,7 @@ while ($token != null && $verifiche != null) {
   break;
 }
 
-if ($token == null || $id_studente == null) {
+if ($token == null || $id_studente == null || $id_verifiche_inviate == null) {
   $newVerifiche = $verifiche;
 }
 

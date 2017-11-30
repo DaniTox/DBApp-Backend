@@ -63,17 +63,17 @@ if ($voti == null) {
 
 
 //RIORDINA IL RISULTATO
-$newVoti = array();
-foreach ($voti as $voto) {
-  foreach ($voto as $key => $value) {
-    if ($key == "materia") {
-      if ($newVoti[$value] == null) {
-        $newVoti[$value] = array();
-      }
-      array_push($newVoti[$value], $voto);
-    }
-  }
-}
+// $newVoti = array();
+// foreach ($voti as $voto) {
+//   foreach ($voto as $key => $value) {
+//     if ($key == "materia") {
+//       if ($newVoti[$value] == null) {
+//         $newVoti[$value] = array();
+//       }
+//       array_push($newVoti[$value], $voto);
+//     }
+//   }
+// }
 
 
 
@@ -84,7 +84,7 @@ foreach ($voti as $voto) {
 //RITORNA IL RISULTATO
 $values["code"] = "200";
 $values["message"] = "Voti ottenuti correttamente";
-$values["voti"] = $newVoti;
+$values["voti"] = $voti;
 echo json_encode($values);
 $connessione->disconnect();
 exit(0);
