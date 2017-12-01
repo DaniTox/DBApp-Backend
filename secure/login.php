@@ -50,7 +50,9 @@ $classe = null;
 $stmt->bind_result($classe);
 $stmt->fetch();
 $stmt->close();
-
+if ($classe == null) {
+  echo json_encode(geterror("idClasse String ottenuto == null"));
+}
 
 
 //DISCONNETTI LA CONN AL DATABASE

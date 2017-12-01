@@ -18,7 +18,7 @@ $classe = $_REQUEST['classe'];
 
 if ($nome == null || $cognome == null || $email == null || $password == null || $classe == null) {
   echo json_encode(geterror("Manca qualche valore"));
-  dbabort();
+  exit(1);
 }
 
 
