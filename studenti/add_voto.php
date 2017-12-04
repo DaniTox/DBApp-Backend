@@ -52,6 +52,21 @@ if ($temp == null) {
 }
 
 
+//CHECK IF STUDENTE ALREADY SENT THIS VOTO
+$query = "SELECT id FROM Voti WHERE idStudente = ? AND idVerifica = ?";
+$stmt = $connessione->conn->prepare($query);
+$stmt->bind_param("ii", $id_studente, $id_verifica);
+$stmt->execute();
+$id = null;
+$stmt->bind_result($id);
+$stmt->fetch();
+$stmt->close();
+if ($id != null) {
+  echo json_encode(geterror("Hai già inserito questo voto. Torna nella pagina delle verifiche e trascina per aggiornare le verifiche."));
+  $connessione->disconnect();
+  exit(1);
+}
+
 
 //INSERISCI IL VOTO NEL DATABASE
 $query = "INSERT INTO Voti (idStudente, idVerifica, Voto) VALUES (?, ?, ?)";
