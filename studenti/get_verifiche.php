@@ -1,8 +1,11 @@
 <?php
 
 $classe = $_REQUEST['classe'];
-$token = $_REQUEST['token'];
+$token = null;
 
+if (isset($_REQUEST['token'])) {
+  $token = $_REQUEST['token'];
+}
 if ($classe == null) {
   echo json_encode(geterror("Manca un parametro"));
   exit(1);
@@ -97,7 +100,7 @@ foreach ($verifiche as $verifica) {
 
 end:
 
-if ($newVerifiche == null) {
+if (!isset($newVerifiche) || $newVerifiche == null) {
   $newVerifiche = $verifiche;
 }
 

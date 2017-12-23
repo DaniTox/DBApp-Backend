@@ -9,6 +9,12 @@ if ($token == null || $id_verifica == null || $voto == null) {
   exit(1);
 }
 
+//CHECK VOTO
+if ($voto < 0 || $voto > 100) {
+  echo json_encode(geterror("Voto troppo basso o troppo alto"));
+  exit(1);
+}
+
 
 //SET UP CONNECTION
 $file = file_get_contents("credentials.json");
@@ -21,18 +27,25 @@ $connessione->connect();
 
 
 //GET ID STUDENTE DAL TOKEN
-$query = "SELECT id FROM Studenti WHERE token = ?";
+$query = "SELECT id, idClasse FROM Studenti WHERE token = ?";
 $stmt = $connessione->conn->prepare($query);
 $stmt->bind_param("s", $token);
 $stmt->execute();
 $id_studente = null;
-$stmt->bind_result($id_studente);
+$id_classe = null;
+$stmt->bind_result($id_studente, $id_classe);
 $stmt->fetch();
 $stmt->close();
 if ($id_studente == null) {
   echo json_encode(geterror("Errore: id_studente ottenuto = null"));
   $connessione->disconnect();
   exit(1);
+}
+if ($id_classe == 1 || $id_classe = 5) {
+  if ($voto > 3) {
+    echo json_encode(geterror("Visto che sei in prima, i voti vanno da 0 a 3. Inserisci il tuo voto vero compreso tra questo range."));
+    exit(1);
+  }
 }
 
 
