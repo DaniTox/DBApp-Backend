@@ -41,7 +41,7 @@ if ($id_studente == null) {
   $connessione->disconnect();
   exit(1);
 }
-if ($id_classe == 1 || $id_classe = 5) {
+if ($id_classe == 1 || $id_classe == 5) {
   if ($voto > 3) {
     echo json_encode(geterror("Visto che sei in prima, i voti vanno da 0 a 3. Inserisci il tuo voto vero compreso tra questo range."));
     exit(1);
