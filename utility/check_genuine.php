@@ -2,6 +2,11 @@
 
 $token = $_REQUEST['token'];
 
+if ($token == null) {
+	echo json_encode(geterror("400", "Manca qualche parametro"));
+	exit(1);
+}
+
 
 $file = file_get_contents("../secure/credentials.json");
 $json = json_decode($file, true);
