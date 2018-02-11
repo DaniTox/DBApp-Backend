@@ -19,7 +19,7 @@ $connessione->connect();
 
 
 $query = "SELECT id FROM Studenti WHERE token = ?";
-$stmt = $connection->conn->prepare($query);
+$stmt = $connessione->conn->prepare($query);
 $stmt->bind_param("s", $token);
 $stmt->execute();
 $id_user = null;
@@ -30,7 +30,7 @@ $stmt->close();
 $connessione->disconnect();
 
 if ($id_user == null) {
-  echo json_encode(geterror("400", "L'account non esiste più"));
+  echo json_encode(geterror("-1", "L'account non esiste più"));
   exit(1);
 }
 else {
