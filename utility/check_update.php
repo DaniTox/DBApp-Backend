@@ -20,7 +20,7 @@ $connessione = new Connection("localhost", $user, $passwd, "App");
 $connessione->connect();
 
 //GET MOST RECENT VERSION
-$query = "SELECT version, sub_version, sub_version2, build FROM Versions ORDER BY id DESC LIMIT 1";
+$query = "SELECT version, sub_version, sub_version2, build, hotfix FROM Versions ORDER BY id DESC LIMIT 1";
 $stmt = $connessione->conn->prepare($query);
 $stmt->execute();
 
@@ -28,7 +28,8 @@ $up_vers = null;
 $up_sub = null;
 $up_sub2 = null;
 $up_build = null;
-$stmt->bind_result($up_vers, $up_sub, $up_sub2, $up_build);
+$hotfix = null;
+$stmt->bind_result($up_vers, $up_sub, $up_sub2, $up_build, $hotfix);
 $stmt->fetch();
 $stmt->close();
 if ($up_build == null || $up_vers == null) {
@@ -73,6 +74,7 @@ if ($up_sub == null) { $up_sub = 0; }
 
 $newVers = $up_vers.".".$up_sub.".".$up_sub2;
 
+$hotfix = ($hotfix == 1) ? True : False;
 
 $value["code"] = "1";
 $value["message"] = "Nuova versione disponibile";
@@ -80,6 +82,7 @@ $value["update"] = array(
 	"newVersionAvailable" => True,
 	"version" => strval($newVers),
 	"build" => strval($up_build),
+	"hotfix" => $hotfix,
 );
 echo json_encode($value);
 $connessione->disconnect();

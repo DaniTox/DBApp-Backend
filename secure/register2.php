@@ -10,7 +10,7 @@ if ($codFiscale == null || $email == null || $password == null) {
 }
 
 
-$file = $file_get_contents("credentials.json");
+$file = file_get_contents("credentials.json");
 $json = json_decode($file, true);
 $dbuser = $json['user'];
 $dbpasswd = $json['password'];
@@ -19,23 +19,24 @@ $connessione = new Connection("localhost", $dbuser, $dbpasswd, "App");
 $connessione->connect();
 
 //CHECK IF ALREADY EXIST
-$query = "SELECT email FROM Studenti WHERE codiceFiscale = ?";
+$query = "SELECT email FROM Studenti2 WHERE codiceFiscale = ?";
 $stmt = $connessione->conn->prepare($query);
 $stmt->bind_param("s", $codFiscale);
 $stmt->execute();
-$stds = null;
-$stmt->bind_result($stds);
+$responseMail = null;
+$stmt->bind_result($responseMail);
 $stmt->fetch();
 $stmt->close();
-if (count($stds) > 0 ) {
-  echo json_encode(geterror("400", "Hai già effettuato la registrazione. Prova ad accedere"));
-  $connessione->disconnect();
+if ($responseMail != null) {
+  echo json_encode(geterror("400", "Registrazione già effettuata. Prova a fare il login"));
   exit(1);
 }
 
 
+
+
 //GENERA TOKEN, SALT, PASSWD HASHED
-$query = "SELECT token FROM Studenti";
+$query = "SELECT token FROM Studenti2";
 $result = $connessione->conn->query($query);
 $tokens = null;
 while ($row = $result->fetch_array(MYSQLI_NUM)) {
@@ -54,15 +55,47 @@ $passwdHashed = hash("sha512", ($password.$salt));
 
 
 //REGISTRA L'UTENTE
-$query = "UPDATE Studenti SET email = ?, password = ?, salt= ?, token= ? WHERE codiceFiscale = ?";
+$query = "UPDATE Studenti2 SET email = ?, password = ?, salt= ?, token= ?, isRegistered = 1 WHERE codiceFiscale = ?";
 $stmt = $connessione->conn->prepare($query);
-$stmt->bind_param("sssss", $email, $password, $salt, $token, $codFiscale);
+$stmt->bind_param("sssss", $email, $passwdHashed, $salt, $token, $codFiscale);
 $stmt->execute();
 $stmt->close();
 
 
+//GET CLASSE DALL'UTENTE
+$query = "SELECT idClasse FROM Studenti2 WHERE codiceFiscale = ?";
+$stmt = $connessione->conn->prepare($query);
+$stmt->bind_param("s", $codFiscale);
+$classe = null;
+$stmt->execute();
+$stmt->bind_result($classe);
+$stmt->fetch();
+$stmt->close();
+
+
+
+//GET IDCLASSE FROM CLASSE
+$query = "SELECT idClasse FROM Classi WHERE classe = ?";
+$stmt = $connessione->conn->prepare($query);
+$stmt->bind_param("s", $classe);
+$idClasse = null;
+$stmt->execute();
+$stmt->bind_result($idClasse);
+$stmt->fetch();
+$stmt->close();
+
+
+//UPDATE CLASSE CON L'IDCLASSE
+// $query = "UPDATE Studenti2 SET idClasse = ? WHERE codiceFiscale = ?";
+// $stmt = $connessione->conn->prepare($query);
+// $stmt->bind_param("ss", $idClasse, $codFiscale);
+// $stmt->execute();
+// $stmt->close();
+
+
+
 //OTTIENI LO STUDENTE APPENA REGISTRATO
-$query = "SELECT * FROM Studenti WHERE codiceFiscale = ?";
+$query = "SELECT * FROM Studenti2 WHERE codiceFiscale = ?";
 $stmt = $connessione->conn->prepare($query);
 $stmt->bind_param("s", $codFiscale);
 $stmt->execute();
@@ -75,21 +108,9 @@ while($row = $result->fetch_array(MYSQLI_ASSOC)) {
 }
 $stmt->close();
 if ($user == null) {
-  echo json_encode(geterror("user ottenuto = null"));
+  echo json_encode(geterror("400","user ottenuto = null"));
   dbabort();
 }
-
-
-//OTTIENI LA CLASSE DAL SUO ID
-$idClasse = $user["idClasse"];
-$query = "SELECT classe FROM Classi WHERE idClasse = ?";
-$stmt = $connessione->conn->prepare($query);
-$stmt->bind_param("i", $idClasse);
-$stmt->execute();
-$classe = null;
-$stmt->bind_result($classe);
-$stmt->fetch();
-$stmt->close();
 
 
 
@@ -121,7 +142,7 @@ function geterror($code, $msg) {
 function generateToken() {
   $lettere = "avcgj38e5sf25sa0jcn3862r5c86vae217329r3hfbc81625261";
     $token = null;
-    for ($i = 0; $i < 60; $i++ ) {
+    for ($i = 0; $i < 60; $i++) {
         $tempChar = $lettere[rand(0, strlen($lettere) - 1)];
         $token .= $tempChar;
     }

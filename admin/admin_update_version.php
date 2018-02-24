@@ -20,10 +20,14 @@ $version = $_REQUEST["version"];
 $sub_vers = $_REQUEST["sub_vers"];
 $sub_vers2 = $_REQUEST["sub_vers2"];
 $build = $_REQUEST["build"];
+$hotfix = $_REQUEST["hotfix"];
 
 if ($version == null || $build == null) {
 	echo json_encode(geterror("400", "Manca qualche parametro..."));
 	exit(1);
+}
+if ($hotfix == null) {
+	$hotfix = 0;
 }
 
 //INIT CONNECTION   
@@ -46,9 +50,9 @@ if ($sub_vers2 == null) {
 }
 
 //QUERY
-$query = "INSERT INTO Versions (version, sub_version, sub_version2, build, released) VALUES (?,?,?,?,?)";
+$query = "INSERT INTO Versions (version, sub_version, sub_version2, build, released, hotfix) VALUES (?,?,?,?,?,?)";
 $stmt = $connessione->conn->prepare($query);
-$stmt->bind_param("iiids", $version, $sub_vers, $sub_vers2, $build, $currDate);
+$stmt->bind_param("iiidsi", $version, $sub_vers, $sub_vers2, $build, $currDate, $hotfix);
 $stmt->execute();
 $stmt->close();
 $connessione->disconnect();
