@@ -14,7 +14,7 @@ if ($materia == null || $classe == null || $data == null || $titolo == null || $
 
 //SETTING UP THE CONNECTION TO DATABASE
 require_once("../secure/Connection.php");
-$file = file_get_contents("credentials.json");
+$file = file_get_contents("../secure/credentials.json");
 $json = json_decode($file, true);
 $dbuser = $json["user"];
 $dbpasswd = $json["password"];

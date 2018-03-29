@@ -8,7 +8,7 @@ if ($token == null) {
 }
 
 //SET UP CONNECTION
-$file = file_get_contents("credentials.json");
+$file = file_get_contents("../secure/credentials.json");
 $json = json_decode($file, true);
 $dbuser = $json["user"];
 $dbpasswd = $json["password"];

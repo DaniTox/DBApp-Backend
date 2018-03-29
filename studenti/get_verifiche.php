@@ -1,6 +1,7 @@
 <?php
 
 $classe = $_REQUEST['classe'];
+$dev_mode = $_REQUEST['dev'];
 $token = null;
 
 if (isset($_REQUEST['token'])) {
@@ -12,7 +13,7 @@ if ($classe == null) {
 }
 
 //SET UP CONNECTION
-$file = file_get_contents("credentials.json");
+$file = file_get_contents("../secure/credentials.json");
 $json = json_decode($file, true);
 $dbuser = $json["user"];
 $dbpasswd = $json["password"];
@@ -22,7 +23,7 @@ $connessione->connect();
 
 
 //GET VERIFICHE BY CLASSE
-$query = "SELECT idVerifica, Data, Svolgimento, Titolo, classe, Materia, Formatore FROM Verifiche
+$query = "SELECT idVerifica, dev_mode, note, Data, Svolgimento, Titolo, classe, Materia, Formatore FROM Verifiche
           JOIN MateriePerClasse ON Verifiche.idMateriaClasse = MateriePerClasse.id
           JOIN Classi ON MateriePerClasse.idClasse = Classi.idClasse
           JOIN Materie ON MateriePerClasse.idMateria = Materie.idMateria
@@ -33,8 +34,18 @@ $stmt->bind_param("s", $classe);
 $stmt->execute();
 $result = $stmt->get_result();
 $verifiche = null;
+
 while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
   if (!empty($row)) {
+
+    $properties = null;
+    if ($row["note"] != null && $row["note"] != "") {
+      $properties = array(
+        "profnote" => $row["note"],
+      );
+    }
+    
+
     $verifiche[] = array(
       "idVerifica" => $row["idVerifica"],
       "data" => $row["Data"],
@@ -43,7 +54,11 @@ while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
       "classe" => $row["classe"],
       "materia" => $row["Materia"],
       "formatore" => $row["Formatore"],
+      "dev_mode" => $row["dev_mode"],
+      "properties" => $properties,
     );
+
+
   }
 }
 $stmt->close();
@@ -100,14 +115,32 @@ foreach ($verifiche as $verifica) {
 
 end:
 
+
 if (!isset($newVerifiche) || $newVerifiche == null) {
   $newVerifiche = $verifiche;
 }
 
+$final_verifiche = null;
+if ($dev_mode != 1) {
+  foreach ($newVerifiche as $id => $ver) {
+    if ($ver["dev_mode"] == 1) {;
+      continue;
+    }
+    unset($ver["dev_mode"]);
+    $final_verifiche[] = $ver;
+  }
+} else {
+  $final_verifiche = $newVerifiche;
+}
+
+
+
+
+
 //RITORNA IL RISULTATO
 $response["code"] = "200";
 $response["message"] = "Ottenute con successo";
-$response["verifiche"] = $newVerifiche;
+$response["verifiche"] = $final_verifiche;
 echo json_encode($response);
 $connessione->disconnect();
 exit(0);
