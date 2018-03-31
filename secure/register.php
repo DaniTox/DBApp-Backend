@@ -22,6 +22,12 @@ if ($nome == null || $cognome == null || $email == null || $password == null || 
 }
 
 
+if (filter_var($email, FILTER_VALIDATE_EMAIL) == false) {
+  echo json_encode(geterror("Formato e-mail non corretto. Controlla se è scritto correttamente"));
+  exit(1);
+}
+
+
 //INIT LA CONNESSIONE
 require_once("Connection.php");
 $file = file_get_contents("credentials.json");
