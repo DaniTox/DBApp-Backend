@@ -3,7 +3,7 @@
 $token = $_REQUEST['token'];
 
 if ($token == null) {
-  echo json_encode(geterror("400", "Manca qualche valore"));
+  echo json_encode(geterror(1, "Manca qualche valore"));
   exit(1);
 }
 
@@ -27,7 +27,7 @@ $stmt->bind_result($id_formatore);
 $stmt->fetch();
 $stmt->close();
 if ($id_formatore == null) {
-  echo json_encode(geterror("400", "id_formatore ottenuto = null"));
+  echo json_encode(geterror(1, "id_formatore ottenuto = null"));
   $connessione->disconnect();
   exit(1);
 }
@@ -57,14 +57,14 @@ while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
 }
 $stmt->close();
 if ($verifiche == null) {
-  echo json_encode(geterror("300", "Non ci sono verifiche"));
+  echo json_encode(geterror(2, "Non ci sono verifiche"));
   $connessione->disconnect();
   exit(0);
 }
 
 
 //RITORNA IL RISULTATO
-$value["code"] = "200";
+$value["code"] = 0;
 $value["message"] = "Verifiche recuperate con successo";
 $value["verifiche"] = $verifiche;
 echo json_encode($value);
