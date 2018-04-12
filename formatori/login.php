@@ -28,7 +28,7 @@ $i = 0;
 while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
   if (!empty($row)) {
     if ($i > 0) {
-      echo json_encode(geterror("400", "SERVER: Ho trovato più formatori con questo nome. Contatta il mio creatore Bazzani per risolvere."));
+      echo json_encode(geterror(1, "SERVER: Ho trovato più formatori con questo nome. Contatta il mio creatore Bazzani per risolvere."));
       $connessione->disconnect();
       exit(1);
     }
@@ -38,7 +38,7 @@ while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
 }
 $stmt->close();
 if ($formatore == null) {
-  echo json_encode(geterror("400", "Nessun formatore trovato nel database con questo nome. Controlla di aver scritto il nome nel modo giusto e se il problema persiste, contatta il mio creatore Sir Dan Bazzani"));
+  echo json_encode(geterror(1, "Nessun formatore trovato nel database con questo nome. Controlla di aver scritto il nome nel modo giusto e se il problema persiste, contatta il mio creatore Sir Dan Bazzani"));
   $connessione->disconnect();
   exit(1);
 }
