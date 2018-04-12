@@ -3,7 +3,7 @@
 $nome = $_REQUEST['nome'];
 $password = $_REQUEST['password'];
 if ($nome == null || $password == null) {
-  echo json_encode(geterror("400", "Manca qualche parametro"));
+  echo json_encode(geterror(1, "Manca qualche parametro"));
   exit(1);
 }
 
@@ -60,14 +60,14 @@ if ($password_typed == $formatore["password"]) {
   $formatore["nome"] = $formatore["Formatore"];
   unset($formatore["Formatore"]);
 
-  $value["code"] = "200";
+  $value["code"] = 0;
   $value["message"] = "Password corretta";
   $value["formatore"] = $formatore;
   echo json_encode($value);
   exit(0);
 }
 else {
-  echo json_encode(geterror("400", "Password errata"));
+  echo json_encode(geterror(2, "Password errata"));
   exit(1);
 }
 
