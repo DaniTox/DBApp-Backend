@@ -6,6 +6,8 @@ $data = $_REQUEST['data'];
 $titolo = $_REQUEST['titolo'];
 $token = $_REQUEST['token'];
 
+$note = $_REQUEST['note'];
+
 if ($materia == null || $classe == null || $data == null || $titolo == null || $token == null) {
   echo json_encode(geterror("Manca qualche parametro"));
   exit(1);
@@ -58,9 +60,9 @@ if ($id_formatore == null) {
 
 
 //CREATE VERIFICA
-$query = "INSERT INTO Verifiche (idMateriaClasse, Data, Titolo, idFormatore) VALUES (?,?,?,?)";
+$query = "INSERT INTO Verifiche (idMateriaClasse, Data, Titolo, idFormatore, note) VALUES (?,?,?,?,?)";
 $stmt = $connessione->conn->prepare($query);
-$stmt->bind_param("issi", $id_materia_classe, $data, $titolo, $id_formatore);
+$stmt->bind_param("issis", $id_materia_classe, $data, $titolo, $id_formatore, $note);
 $stmt->execute();
 $stmt->close();
 
