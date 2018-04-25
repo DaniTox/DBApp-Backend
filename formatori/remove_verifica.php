@@ -4,7 +4,7 @@ $token = $_REQUEST['token'];
 $id_verifica = $_REQUEST['idVerifica'];
 
 if ($token == null || $id_verifica == null) {
-  echo json_encode(geterror("400", "Manca qualche valore"));
+  echo json_encode(geterror(1, "Manca qualche valore"));
   exit(1);
 }
 
@@ -32,12 +32,12 @@ while ($row = $result->fetch_array(MYSQLI_NUM)) {
 }
 $stmt->close();
 if ($tokens == null) {
-  echo json_encode(geterror("400", "tokens nel database = null. Token professore non trovato"));
+  echo json_encode(geterror(1, "tokens nel database = null. Token professore non trovato"));
   $connessione->disconnect();
   exit(1);
 }
 if (!in_array($token, $tokens)) {
-  echo json_encode(geterror("400", "Token non presente nel database"));
+  echo json_encode(geterror(1, "Token non presente nel database"));
   $connessione->disconnect();
   exit(1);
 }
@@ -53,7 +53,7 @@ $stmt->bind_result($temp_verifica);
 $stmt->fetch();
 $stmt->close();
 if ($temp_verifica == null) {
-  echo json_encode(geterror("400", "temp_verifica from id_verifica = null"));
+  echo json_encode(geterror(1, "temp_verifica from id_verifica = null"));
   $connessione->disconnect();
   exit(1);
 }
@@ -77,14 +77,14 @@ $stmt->bind_result($temp_verifica_delete);
 $stmt->fetch();
 $stmt->close();
 if ($temp_verifica_delete != null) {
-  echo json_encode(geterror("400", "Verifica non eliminata correttamente"));
+  echo json_encode(geterror(1, "Verifica non eliminata correttamente"));
   $connessione->disconnect();
   exit(1);
 }
 
 
 //RITORNA IL RISULTATO
-$value["code"] = "200";
+$value["code"] = 0;
 $value["message"] = "Verifica eliminata correttamente";
 echo json_encode($value);
 $connessione->disconnect();
