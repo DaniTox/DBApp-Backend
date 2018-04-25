@@ -34,7 +34,7 @@ if ($id_formatore == null) {
 
 
 //GET VERIFICHE DEL FORMATORE
-$query = "SELECT idVerifica, materia, Titolo, Data, classe FROM Verifiche
+$query = "SELECT idVerifica, materia, Titolo, Data, classe, dev_mode FROM Verifiche
           JOIN MateriePerClasse ON Verifiche.idMateriaClasse = MateriePerClasse.id
           JOIN Classi ON MateriePerClasse.idClasse = Classi.idClasse
           JOIN Materie ON MateriePerClasse.idMateria = Materie.idMateria
@@ -52,6 +52,7 @@ while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
       "titolo" => $row["Titolo"],
       "data" => $row["Data"],
       "classe" => $row["classe"],
+      "dev_mode" => $row["dev_mode"],
     );
   }
 }
