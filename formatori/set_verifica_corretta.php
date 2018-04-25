@@ -63,7 +63,7 @@ $stmt->close();
 
 
 //RITORNA IL RISULTATO
-$value["code"] = "200";
+$value["code"] = 0;
 $value["message"] = "Verifica aggiornata in modo corretto!";
 echo json_encode($value);
 $connessione->disconnect();
@@ -75,7 +75,7 @@ exit(0);
 <?php
 
 function geterror($text) {
-  $value["code"] = "400";
+  $value["code"] = 1;
   $value["message"] = $text;
   return $value;
 }
